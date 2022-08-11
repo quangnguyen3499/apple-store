@@ -6,5 +6,13 @@ from . import views
 # )
 
 urlpatterns = [
-    path('customers/', views.CreateCustomerAPIView.as_view(), name='create-user'),
+    path('customers/', views.CreateCustomerAPIView.as_view(), name='create-customer'),
+    # path('list', views.ListCustomerView.as_view(), name='get-list-customer'),
+    # path('<int:user_id>', views.GetAndUpdateAndDeleteCustomerView.as_view(), name='get-update-delete-customer'),
+    # path('reset_mail/', views.SendMailResetPasswordView.as_view(), name="send-mail-reset-password"),
+    path('resend_active/', views.ResendActiveView.as_view(), name="resend-active-account"),
+    path('active/', views.ActiveAccountView.as_view(), name='active-account')
+    # path('change_password/', views.ChangePasswordView.as_view(), name="change-password"),
+    # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

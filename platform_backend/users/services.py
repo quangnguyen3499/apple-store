@@ -3,6 +3,7 @@ from .models import Customer, User
 from django.core.mail import send_mail
 from allauth.utils import generate_unique_username
 from django.utils.crypto import get_random_string
+from django.core.exceptions import ValidationError
 
 @transaction.atomic
 def create_user(
@@ -47,9 +48,9 @@ def create_customer(
         password=password,
         type=User.Types.CUSTOMER
     )
+
     customer = Customer.objects.create(
         user=user,
-        status=Customer.Status.PENDING,
         address=address,
         city=city,
         province=province
