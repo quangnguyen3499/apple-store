@@ -3,20 +3,22 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from platform_backend.users.models import Customer, User
-from platform_backend.users.services import create_customer, send_mail_active_service
+from platform_backend.users.selectors import get_user_by_email
+from platform_backend.users.services import create_customer, send_mail_active_service, create_user
+from rest_framework.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.CharField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     username = serializers.CharField()
+    status = serializers.CharField()
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'username']
+        fields = ['email', 'first_name', 'last_name', 'username', 'status']
 
 class CustomerSerializer(serializers.ModelSerializer):
-    status = serializers.CharField()
     address = serializers.CharField()
     city = serializers.CharField()
     province = serializers.CharField()
@@ -40,10 +42,40 @@ class CreateCustomerAPIView(APIView):
         serializer = self.CreateCustomerRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         cleaned_data = serializer.validated_data
+        
+        user_check = get_user_by_email(email=cleaned_data["email"])
+        if user_check:
+            raise ValidationError("duplicate email")
 
         customer = create_customer(**cleaned_data)
-        active_token = customer.create_token()
+        active_token = customer.user.generate_token()
         send_mail_active_service(email=customer.user.email, content="Activation mail", token=active_token)
 
         data = CustomerSerializer(customer).data
         return Response(data, status=201)
+
+class ResendActiveView(APIView):
+    class ResendActiveSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+
+    def post(self, request):
+        serializer = self.ResendActiveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        cleaned_data = serializer.validated_data
+
+        user = get_user_by_email(email=cleaned_data["email"])
+        active_token = user.generate_token()
+        send_mail_active_service(email=user.email, content="Activation mail", token=active_token)
+
+        return Response(status=200)
+
+class ActiveAccountView(APIView):
+    class ActiveAccountSerializer(serializers.Serializer):
+        token = serializers.CharField()
+
+    def post(self, request):
+        serializer = self.ActiveAccountSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        cleaned_data = serializer.validated_data
+
+        
