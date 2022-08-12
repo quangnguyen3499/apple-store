@@ -1,23 +1,22 @@
 from rest_framework.permissions import BasePermission
 
 
-class IsCommunityLeader(BasePermission):
-    message = "User not a Community Leader."
+class IsAdmin(BasePermission):
+    message = "User not a Admin."
 
     def has_permission(self, request, view) -> bool:
         if not request.user.is_authenticated:
             return False
-        if request.user.is_cl:
+        if request.user.is_admin:
             return True
         return False
 
-
-class IsSuki(BasePermission):
-    message = "User not a Suki."
+class IsCustomer(BasePermission):
+    message = "User not a Customer."
 
     def has_permission(self, request, view) -> bool:
         if not request.user.is_authenticated:
             return False
-        if request.user.is_suki:
+        if request.user.is_customer:
             return True
         return False
