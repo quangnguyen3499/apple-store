@@ -2,15 +2,24 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from platform_backend.common.api.mixins import APIErrorsMixin
+from platform_backend.common.api.pagination import LimitOffsetPagination, get_paginated_response
 
 from platform_backend.users.models import Customer, User
-from platform_backend.users.selectors import get_user_by_email, get_user_by_token
+from platform_backend.users.selectors import (
+    get_user_by_email, 
+    get_user_by_token,
+    customer_list,
+    get_user_by_id
+)
 from platform_backend.users.services import (
     create_customer, 
     send_mail_active_service, 
     active_user,
     send_mail_reset_password_service,
-    change_password
+    change_password,
+    update_customer,
+    delete_customer
 )
 
 class UserSerializer(serializers.ModelSerializer):
@@ -116,3 +125,52 @@ class ChangePasswordView(APIView):
         user = get_user_by_token(token=cleaned_data["token"])
         change_password(user=user, **cleaned_data)
         return Response({"message": "Success"})
+
+class ListCustomerView(APIErrorsMixin, APIView):
+    class Pagination(LimitOffsetPagination):
+        default_limit = 50
+        max_limit = 100
+
+    class FilterSerializer(serializers.Serializer):
+        first_name = serializers.CharField(default="", required=False, allow_blank=True)
+        last_name = serializers.CharField(default="", required=False, allow_blank=True)
+        username = serializers.CharField(default="", required=False, allow_blank=True)
+
+    def get(self, request):
+        filters = self.FilterSerializer(data=request.query_params)
+        filters.is_valid(raise_exception=True)
+        customers = customer_list(filters=filters.validated_data)
+        return get_paginated_response(
+            pagination_class=self.Pagination,
+            serializer_class=UserSerializer,
+            queryset=customers,
+            request=request,
+            view=self,
+        )
+
+class GetAndUpdateAndDeleteCustomerView(APIErrorsMixin, APIView):
+    class UpdateRequestSerializer(serializers.Serializer):
+        first_name = serializers.CharField(default="", required=False, allow_blank=True)
+        last_name = serializers.CharField(default="", required=False, allow_blank=True)
+        username = serializers.CharField(default="", required=False, allow_blank=True)
+        address = serializers.CharField(default="", required=False, allow_blank=True)
+        city = serializers.CharField(default="", required=False, allow_blank=True)
+        province = serializers.CharField(default="", required=False, allow_blank=True)
+
+    def get(self, request, user_id):
+        user = get_user_by_id(id=user_id)
+        data = UserSerializer(user).data
+        return Response(data, status=200)
+    
+    def put(self, request, user_id):
+        user = get_user_by_id(id=user_id)
+        serializer = self.UpdateRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = update_customer(user=user, **serializer.validated_data)
+        data = UserSerializer(user).data
+        return Response(data, status=200)
+
+    def delete(self, request, user_id):
+        user = get_user_by_id(id=user_id)
+        delete_customer(user=user)
+        return Response("success", status=204)

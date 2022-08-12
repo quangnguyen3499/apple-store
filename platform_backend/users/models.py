@@ -1,6 +1,5 @@
 from datetime import timedelta
 import secrets
-import string
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -8,10 +7,25 @@ import secrets
 import uuid
 from rest_framework.permissions import BasePermission
 
-def generate_otp():
-    return "".join(secrets.choice(string.digits) for i in range(6))
+class SoftDeleteManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
 
-class User(AbstractUser):
+class SoftDeleteModel(models.Model, SoftDeleteManager):
+    deleted_at = models.DateTimeField(max_length=(6), null=True, blank=True)
+
+    def soft_delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
+
+    def restore(self):
+        self.deleted_at = None
+        self.save()
+
+    class Meta:
+        abstract = True
+
+class User(AbstractUser, SoftDeleteModel):
     class Types(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
         CUSTOMER = "CUSTOMER", "Customer"
@@ -31,6 +45,10 @@ class User(AbstractUser):
     status = models.CharField(
         max_length=255, choices=Status.choices, default=Status.PENDING, db_index=True
     )
+    updated_date = models.DateTimeField(auto_now=True, max_length=(6))
+    created_date = models.DateTimeField(auto_now_add=True, max_length=(6))
+    objects = SoftDeleteManager()
+    all_objects = models.Manager()
 
     @property
     def is_admin(self):
@@ -51,22 +69,27 @@ class User(AbstractUser):
         self.save()
         return self.token
 
-class Admin(models.Model):
+
+class Admin(SoftDeleteModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="admin")
-    deleted_at = models.DateTimeField(max_length=(6), null=True, blank=True)
     updated_date = models.DateTimeField(auto_now=True, max_length=(6))
     created_date = models.DateTimeField(auto_now_add=True, max_length=(6))
     date_joined = models.DateTimeField(max_length=(6), null=True, blank=True)
+    objects = SoftDeleteManager()
+    all_objects = models.Manager()
 
-class Customer(models.Model):
+
+class Customer(SoftDeleteModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer")
     address = models.CharField(max_length=254, null=True, blank=True)
     city = models.CharField(max_length=254, null=True, blank=True)
     province = models.CharField(max_length=254, null=True, blank=True)
-    deleted_at = models.DateTimeField(max_length=(6), null=True, blank=True)
     updated_date = models.DateTimeField(auto_now=True, max_length=(6))
     created_date = models.DateTimeField(auto_now_add=True, max_length=(6))
     date_joined = models.DateTimeField(max_length=(6), null=True, blank=True)
+    objects = SoftDeleteManager()
+    all_objects = models.Manager()
+
 
 class BlackListedToken(models.Model):
     token = models.CharField(max_length=500)
@@ -76,9 +99,10 @@ class BlackListedToken(models.Model):
     class Meta:
         unique_together = ("token", "user")
 
+
 class IsTokenValid(BasePermission):
     def has_permission(self, request, view):
-        user_id = request.user.id            
+        user_id = request.user.id
         is_allowed_user = True
         token = request.auth.decode("utf-8")
         try:
