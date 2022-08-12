@@ -45,7 +45,9 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    'rest_framework_simplejwt.token_blacklist',
+]
 
 LOCAL_APPS = [
     "platform_backend.users",
@@ -119,18 +121,21 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication"
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
     "EXCEPTION_HANDLER": "platform_backend.common.api.errors.exception_errors_format_handler",
-    "DEFAULT_FILTER_BACKENDS": [
-        "django_filters.rest_framework.DjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
-        "rest_framework.filters.OrderingFilter",
-    ],
+    # "DEFAULT_FILTER_BACKENDS": [
+    #     "django_filters.rest_framework.DjangoFilterBackend",
+    #     "rest_framework.filters.SearchFilter",
+    #     "rest_framework.filters.OrderingFilter",
+    # ],
     # drf-spectacular
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    'DEFAULT_RENDERER_CLASSES': [
+        'platform_backend.common.api.renderers.JSONResponseRenderer',
+    ],
 }
 
 # Internationalization
