@@ -17,4 +17,7 @@ stores_pattern = [
     ),
 ]
 
-urlpatterns = stores_pattern
+products_parttern = []
+carts_parttern = []
+orders_parttern = []
+urlpatterns = stores_pattern + products_parttern + carts_parttern + orders_parttern
