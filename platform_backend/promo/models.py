@@ -1,7 +1,7 @@
 from django.db import models
-from common.models.fields import PriceField
-from users.models import User
-from store.models.orders import Order
+from platform_backend.common.models.fields import PriceField
+from platform_backend.users.models import User
+from platform_backend.store.models.orders import Order
 
 class Promo(models.Model):
     code = models.CharField(max_length=255, null=True, blank=True, unique=True)
@@ -12,11 +12,11 @@ class Promo(models.Model):
     min_order_count = models.IntegerField(default=0)
     max_order_count = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
-    special = models.BooleanField(default=False)
+    expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class UserPromoClaim(models.Model):
-    user = models.ForeignKey(User, related_name="promo_user", on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, related_name="order", on_delete=models.SET_NULL)
-    promo = models.ForeignKey(Promo, related_name="promo", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name="order", null=True, on_delete=models.CASCADE)
+    promo = models.ForeignKey(Promo, related_name="user_claims", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

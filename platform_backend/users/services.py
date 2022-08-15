@@ -75,6 +75,9 @@ def create_admin(
         password=password,
         type=User.Types.ADMIN,
     )
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
 
     admin = Admin.objects.create(
         user=user,

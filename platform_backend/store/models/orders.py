@@ -53,7 +53,7 @@ class Order(Timestampable):
     payment_method = models.CharField(
         max_length=50,
         choices=PaymentMethod.choices,
-        default=PaymentMethod.COD,
+        default=PaymentStatus.TO_COLLECT,
         db_index=True,
     )
     payment_status = models.CharField(
