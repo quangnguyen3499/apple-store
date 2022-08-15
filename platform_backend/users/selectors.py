@@ -4,14 +4,17 @@ from django.db.models.query import QuerySet
 import django_filters
 from django.db.models import Q
 
+
 def get_user_by_id(*, id: int) -> User:
     try:
         return User.objects.get(pk=id)
     except:
         raise NotFound("User does not exist")
 
+
 def get_user_by_email(*, email: str) -> User:
     return User.objects.filter(email=email).first()
+
 
 def get_user_by_token(*, token: str) -> User:
     try:
@@ -19,10 +22,12 @@ def get_user_by_token(*, token: str) -> User:
     except User.DoesNotExist:
         raise NotFound("Token not valid")
 
-def customer_list(*, filters=None) -> QuerySet[User]:
+
+def user_list(*, type, filters=None) -> QuerySet[User]:
     filters = filters or {}
-    customers = User.objects.filter(type=User.Types.CUSTOMER).all()
+    customers = User.objects.filter(type=type).all()
     return CustomerFilter(filters, customers).qs
+
 
 class CustomerFilter(django_filters.FilterSet):
     first_name = django_filters.CharFilter(method="search_filter", label="first_name")

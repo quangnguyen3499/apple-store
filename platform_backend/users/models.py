@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 import secrets
 import uuid
 from rest_framework.permissions import BasePermission
+from django.contrib.auth.models import UserManager
 
 class SoftDeleteManager(models.Manager):
     def get_queryset(self):
@@ -47,7 +48,7 @@ class User(AbstractUser, SoftDeleteModel):
     )
     updated_date = models.DateTimeField(auto_now=True, max_length=(6))
     created_date = models.DateTimeField(auto_now_add=True, max_length=(6))
-    objects = SoftDeleteManager()
+    objects = UserManager()
     all_objects = models.Manager()
 
     @property
