@@ -46,7 +46,8 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'rest_framework_simplejwt.token_blacklist',
+    "rest_framework_simplejwt.token_blacklist",
+    "rest_framework",
 ]
 
 LOCAL_APPS = [
@@ -121,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
@@ -133,8 +134,8 @@ REST_FRAMEWORK = {
     # ],
     # drf-spectacular
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    'DEFAULT_RENDERER_CLASSES': [
-        'platform_backend.common.api.renderers.JSONResponseRenderer',
+    "DEFAULT_RENDERER_CLASSES": [
+        "platform_backend.common.api.renderers.JSONResponseRenderer",
     ],
 }
 
