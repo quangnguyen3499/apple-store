@@ -49,10 +49,13 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     'django_filters',
+    "rest_framework",
 ]
 
 LOCAL_APPS = [
     "platform_backend.users",
+    "platform_backend.store",
+    "platform_backend.inventory",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
