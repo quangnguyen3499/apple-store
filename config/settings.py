@@ -56,6 +56,7 @@ LOCAL_APPS = [
     "platform_backend.users",
     "platform_backend.store",
     "platform_backend.inventory",
+    # "platform_backend.promo",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
