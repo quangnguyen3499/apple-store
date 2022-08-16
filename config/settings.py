@@ -47,6 +47,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     'django_filters',
     "rest_framework",
@@ -56,7 +57,7 @@ LOCAL_APPS = [
     "platform_backend.users",
     "platform_backend.store",
     "platform_backend.inventory",
-    # "platform_backend.promo",
+    "platform_backend.promo",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -170,4 +171,5 @@ AUTH_USER_MODEL = "users.User"
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'UPDATE_LAST_LOGIN': True,
 }
