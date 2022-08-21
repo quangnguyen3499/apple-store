@@ -58,6 +58,7 @@ LOCAL_APPS = [
     "platform_backend.store",
     "platform_backend.inventory",
     "platform_backend.promo",
+    "platform_backend.rating",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -173,3 +174,5 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'UPDATE_LAST_LOGIN': True,
 }
+
+RATING_TIME_LIMIT = 7

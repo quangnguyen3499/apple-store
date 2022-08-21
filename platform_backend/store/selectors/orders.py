@@ -1,6 +1,7 @@
 from platform_backend.store.models.orders import Order
 from django.db.models.query import QuerySet, Q
 import django_filters
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def order_list(*, filters=None) -> QuerySet[Order]:
@@ -33,3 +34,10 @@ class OrderFilter(django_filters.FilterSet):
         return queryset.filter(
             Q(user__first_name__icontains=value) | Q(user__last_name__icontains=value)
         )
+
+
+def get_order(*, pk: str) -> Order:
+    try:
+        return Order.objects.get(pk=pk)
+    except Order.DoesNotExist:
+        raise ObjectDoesNotExist("Order not found.")
