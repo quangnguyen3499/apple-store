@@ -15,3 +15,11 @@ def get_store_detai_list(store_id: str):
         except Store.DoesNotExist:
             raise ValidationError("Store does not exist")
     return store
+
+
+def get_store(store_id: str):
+    try:
+        store = Store.objects.get(id=store_id)
+        return store
+    except Store.DoesNotExist:
+        raise ValidationError("Store does not exist")

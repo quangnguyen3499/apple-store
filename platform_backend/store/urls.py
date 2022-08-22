@@ -17,7 +17,33 @@ stores_pattern = [
     ),
 ]
 
-products_parttern = []
+products_parttern = [
+    path(
+        "api/v1/product/category/creating",
+        products.CreatingCategoryAPIView.as_view(),
+        name="category-create",
+    ),
+    path(
+        "api/v1/product/category/<int:category_id>/updating",
+        products.UpdatingCategoryAPIView.as_view(),
+        name="category-update",
+    ),
+    path(
+        "api/v1/product/category/list",
+        products.CategoriesListAPIView.as_view(),
+        name="category-list",
+    ),
+    path(
+        "api/v1/product/creating/",
+        products.CreatingProductAPIView.as_view(),
+        name="product_create",
+    ),
+    path(
+        "api/v1/product/list/",
+        products.ProductListAPIView.as_view(),
+        name="product_list",
+    ),
+]
 carts_parttern = []
 orders_parttern = []
 urlpatterns = stores_pattern + products_parttern + carts_parttern + orders_parttern
