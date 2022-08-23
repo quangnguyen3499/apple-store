@@ -20,5 +20,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("platform_backend.users.urls")),
     path("", include("platform_backend.store.urls")),
+    path("", include("platform_backend.promo.urls")),
     path("", include("platform_backend.inventory.urls")),
 ]

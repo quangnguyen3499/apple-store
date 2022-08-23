@@ -8,9 +8,11 @@ import uuid
 from rest_framework.permissions import BasePermission
 from django.contrib.auth.models import UserManager
 
+
 class SoftDeleteManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(deleted_at__isnull=True)
+
 
 class SoftDeleteModel(models.Model, SoftDeleteManager):
     deleted_at = models.DateTimeField(max_length=(6), null=True, blank=True)
@@ -25,6 +27,7 @@ class SoftDeleteModel(models.Model, SoftDeleteManager):
 
     class Meta:
         abstract = True
+
 
 class User(AbstractUser, SoftDeleteModel):
     class Types(models.TextChoices):

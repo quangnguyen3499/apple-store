@@ -295,10 +295,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user.status == user.Status.DEACTIVATED:
             raise ValidationError("User is deactivated")
         token = super().get_token(user)
-
+        breakpoint()
         return token
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
-
     serializer_class = MyTokenObtainPairSerializer

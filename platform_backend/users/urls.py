@@ -5,8 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenBlacklistView,
 )
 
-urlpatterns = [
-    # user
+user_patterns = [
     path(
         "api/v1/users/reset_mail/",
         views.SendMailForgotPasswordView.as_view(),
@@ -47,7 +46,9 @@ urlpatterns = [
         TokenBlacklistView.as_view(),
         name="token_blacklist",
     ),
-    # customer
+]
+
+customer_patterns = [
     path(
         "api/v1/users/customers/",
         views.CreateCustomerAPIView.as_view(),
@@ -63,7 +64,9 @@ urlpatterns = [
         views.GetAndUpdateAndDeleteCustomerView.as_view(),
         name="get-update-delete-customer",
     ),
-    # admin
+]
+
+admin_patterns = [
     path(
         "api/v1/users/admins/",
         views.CreateAdminAPIView.as_view(),
@@ -75,3 +78,5 @@ urlpatterns = [
         name="get-list-admin",
     ),
 ]
+
+urlpatterns = user_patterns + customer_patterns + admin_patterns
