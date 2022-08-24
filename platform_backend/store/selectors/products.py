@@ -3,11 +3,19 @@ import django_filters
 
 from ..models.products import Product, Categories
 from django.db.models.expressions import (
-    Q,
     F,
     Case,
     When,
 )
+from django.db.models.query import Q
+
+
+def get_product(*, pk: int) -> Product:
+    try:
+        product = Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        raise ObjectDoesNotExist("Product not found.")
+    return product
 
 
 def get_category(category_id: int):

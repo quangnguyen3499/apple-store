@@ -1,8 +1,27 @@
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 
 from ..models.products import Product, Categories
 from ..selectors.store import get_store
-from ..selectors.products import get_category
+from ..selectors.products import get_category, get_product
+from django.db.models import Avg
+
+
+def update_average_rating(
+    *,
+    product_id: int,
+) -> Product:
+    average_rating = (
+        Product.objects.filter(
+            pk=product_id,
+        )
+        .aggregate(
+            average_rating=Avg("product_ratings__rating__rating"),
+        )
+        .get("average_rating")
+    )
+    product = get_product(pk=product_id)
+    product.avg_rating = average_rating
+    product.save()
 
 
 def create_categories(name: str) -> Categories:
