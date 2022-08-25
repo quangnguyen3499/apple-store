@@ -23,4 +23,5 @@ urlpatterns = [
     path("", include("platform_backend.promo.urls")),
     path("", include("platform_backend.inventory.urls")),
     path("", include("platform_backend.rating.urls")),
+    path("", include("platform_backend.payment.urls")),
 ]

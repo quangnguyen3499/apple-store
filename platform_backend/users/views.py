@@ -4,21 +4,21 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from platform_backend.common.api.mixins import APIErrorsMixin
-from platform_backend.common.api.pagination import (
+from ..common.api.mixins import APIErrorsMixin
+from ..common.api.pagination import (
     LimitOffsetPagination,
     get_paginated_response,
 )
-from platform_backend.common.api.permissions import IsAdmin, IsCustomer
+from ..common.api.permissions import IsAdmin, IsCustomer
 
-from platform_backend.users.models import Customer, User, Admin
-from platform_backend.users.selectors import (
+from ..users.models import Customer, User, Admin
+from ..users.selectors import (
     get_user_by_email,
     get_user_by_token,
     user_list,
     get_user_by_id,
 )
-from platform_backend.users.services import (
+from ..users.services import (
     create_customer,
     send_mail_active_service,
     active_user,
@@ -28,6 +28,7 @@ from platform_backend.users.services import (
     delete_user,
     create_admin,
 )
+from ..mystripe.services import create_stripe_customer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import threading
@@ -84,18 +85,21 @@ class CreateCustomerAPIView(APIView):
             raise ValidationError("duplicate email")
 
         customer = create_customer(**cleaned_data)
+        stripe_customer_id = create_stripe_customer(customer=customer)
         token = customer.user.generate_token()
         t = threading.Thread(
             target=send_mail_active_service(
-                email=customer.user.email, content="Activation mail", token=token
+                email=customer.user.email,
+                content="Activation mail",
+                token=token,
             ),
             args=(3,),
         )
-        t.setDaemon(True)
         t.start()
         t.join()
 
         data = CustomerSerializer(customer).data
+        data["stripe_customer_id"] = stripe_customer_id
         return Response(data, status=201)
 
 
@@ -267,6 +271,8 @@ class CreateAdminAPIView(APIView):
 
 
 class ListAdminView(APIErrorsMixin, APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
     class Pagination(LimitOffsetPagination):
         default_limit = 50
         max_limit = 100

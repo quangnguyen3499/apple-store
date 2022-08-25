@@ -29,6 +29,10 @@ class Cart(Timestampable):
     )
     is_checked_out = models.BooleanField(default=False)
 
+    class DiscountTypes(models.TextChoices):
+        PROMO = "PROMO", "Promo"
+        VOUCHER = "VOUCHER", "Voucher"
+
     class Meta:
         unique_together = ("owner", "store")
 
@@ -61,7 +65,7 @@ class CartItem(models.Model):
 
 
 class CartPromo(Timestampable):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="promo")
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="promos")
     promo = models.ForeignKey("promo.Promo", on_delete=models.CASCADE, related_name="+")
 
     @property
