@@ -22,7 +22,21 @@ from ..selectors.products import get_list_of_all_product, get_list_of_all_catego
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = (
+            "id",
+            "created_at",
+            "updated_at",
+            "name",
+            "unit_of_measurement",
+            "price",
+            "promo_price",
+            "sale_percent",
+            "sellable",
+            "items_sold",
+            "on_sale",
+            "store",
+            "category",
+        )
 
 
 class CreatingCategoryAPIView(APIErrorsMixin, APIView):
@@ -102,12 +116,15 @@ class CreatingProductAPIView(APIErrorsMixin, APIView):
         category_id = serializers.CharField(max_length=255)
         name = serializers.CharField(max_length=255)
         unit_of_measurement = serializers.CharField(max_length=50)
+        floor_price = serializers.DecimalField(max_digits=19, decimal_places=4)
         price = serializers.DecimalField(max_digits=19, decimal_places=4)
         promo_price = serializers.DecimalField(
             max_digits=19, decimal_places=4, required=False
         )
         sale_percent = serializers.IntegerField(required=False)
         image = serializers.ImageField(required=False)
+        on_sale = serializers.BooleanField(required=False)
+        sellable = serializers.BooleanField(required=False)
 
     def post(self, request):
         serializer = self.CreatingProductRequestSerializer(data=request.data)

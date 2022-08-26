@@ -12,34 +12,79 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('store', '0003_order'),
+        ("store", "0003_order"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Promo',
+            name="Promo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(blank=True, max_length=255, null=True, unique=True)),
-                ('description', models.CharField(default='', max_length=255)),
-                ('discount_amount', platform_backend.common.models.fields.PriceField()),
-                ('minimum_order_amount', models.IntegerField()),
-                ('max_claims', models.IntegerField(default=0)),
-                ('min_order_count', models.IntegerField(default=0)),
-                ('max_order_count', models.IntegerField(default=0)),
-                ('active', models.BooleanField(default=True)),
-                ('expires_at', models.DateTimeField(blank=True, db_index=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "code",
+                    models.CharField(
+                        blank=True, max_length=255, null=True, unique=True
+                    ),
+                ),
+                ("description", models.CharField(default="", max_length=255)),
+                ("discount_amount", platform_backend.common.models.fields.PriceField()),
+                ("minimum_order_amount", models.IntegerField()),
+                ("max_claims", models.IntegerField(default=0)),
+                ("min_order_count", models.IntegerField(default=0)),
+                ("max_order_count", models.IntegerField(default=0)),
+                ("active", models.BooleanField(default=True)),
+                (
+                    "expires_at",
+                    models.DateTimeField(blank=True, db_index=True, null=True),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='UserPromoClaim',
+            name="UserPromoClaim",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('order', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='order', to='store.order')),
-                ('promo', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_claims', to='promo.promo')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "order",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="order",
+                        to="store.order",
+                    ),
+                ),
+                (
+                    "promo",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_claims",
+                        to="promo.promo",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
