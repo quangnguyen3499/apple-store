@@ -4,6 +4,8 @@ from django.db import models
 from platform_backend.common.models.mixins import Timestampable
 from platform_backend.users.models import User
 from .carts import Cart
+from datetime import datetime
+from django.conf import settings
 
 
 class Order(Timestampable):
@@ -68,3 +70,16 @@ class Order(Timestampable):
         default=OrderStatus.PENDING,
         db_index=True,
     )
+
+    def is_allowed_rating(self):
+        # if self.status == "RECEIVED":
+        #     received_time = self.received_at
+        #     today = datetime.datetime.now(datetime.timezone.utc)
+        #     alowed_rating_time = today - received_time
+        #     if alowed_rating_time <= datetime.timedelta(
+        #         days=settings.RATING_TIME_LIMIT
+        #     ):
+        #         return True
+        # else:
+        #     return False
+        return True

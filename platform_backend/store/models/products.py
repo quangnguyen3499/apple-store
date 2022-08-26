@@ -1,4 +1,3 @@
-from re import M
 from django.db import models
 
 from platform_backend.common.models.mixins import Timestampable
@@ -55,6 +54,8 @@ class ProductImage(Timestampable):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="image")
     upload = models.ImageField(upload_to=get_image_path)
     default = models.BooleanField(default=False)
+    image = models.ImageField()
+    avg_rating = models.FloatField(default=0)
 
     @property
     def url(self):

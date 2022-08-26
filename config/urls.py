@@ -22,4 +22,5 @@ urlpatterns = [
     path("", include("platform_backend.store.urls")),
     path("", include("platform_backend.promo.urls")),
     path("", include("platform_backend.inventory.urls")),
+    path("", include("platform_backend.rating.urls")),
 ]
