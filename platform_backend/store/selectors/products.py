@@ -10,12 +10,28 @@ from django.db.models.expressions import (
 )
 
 
-def get_category(category_id: int):
+def get_product_by_id(pk: int) -> Product:
+    try:
+        product = Product.objects.get(id=pk)
+        return product
+    except Product.DoesNotExist:
+        raise ObjectDoesNotExist("Product does not exist")
+
+
+def get_sellable_product_by_id(pk: int) -> Product:
+    try:
+        product = Product.objects.filter(sellable=True).get(id=pk)
+        return product
+    except Product.DoesNotExist:
+        raise ObjectDoesNotExist("Product is not sellable")
+
+
+def get_category(category_id: int) -> Categories:
     try:
         category = Categories.objects.get(id=category_id)
         return category
     except Categories.DoesNotExist:
-        raise ValidationError("category does not exist")
+        raise ObjectDoesNotExist("category does not exist")
 
 
 class CategoryFilter(django_filters.FilterSet):
@@ -59,10 +75,9 @@ def get_list_of_all_product(*, filters=None) -> Product:
         .annotate(
             product_srp_price=Case(
                 When(promo_price__gt=0, then=F("promo_price")),
-                default=F("default_price"),
+                default=F("price"),
             )
         )
-        # .all()
         .filter(sellable=True)
         .order_by("category")
     )

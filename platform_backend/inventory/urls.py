@@ -20,4 +20,14 @@ urlpatterns = [
         api.StockListAPIView.as_view(),
         name="stock-list",
     ),
+    path(
+        "api/v1/stock/import/",
+        api.ImportingProductAPIView.as_view(),
+        name="stock-import",
+    ),
+    path(
+        "api/v1/stock/import/detail/",
+        api.ProductImportDetailAPIView.as_view(),
+        name="stock-import-detail",
+    ),
 ]

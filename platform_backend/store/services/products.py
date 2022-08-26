@@ -41,7 +41,7 @@ def create_product(
         category=category,
         name=name,
         unit_of_measurement=unit_of_measurement,
-        default_price=price,
+        price=price,
         promo_price=promo_price,
         sale_percent=sale_percent,
     )

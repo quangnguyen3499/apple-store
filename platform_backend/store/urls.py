@@ -44,6 +44,17 @@ products_parttern = [
         name="product_list",
     ),
 ]
-carts_parttern = []
+carts_parttern = [
+    path(
+        "api/v1/cart/item/update",
+        carts.CartAddItemAPIView.as_view(),
+        name="cart-update",
+    ),
+    path(
+        "api/v1/cart/<str:pk>/detail/",
+        carts.CartDetailAPIView.as_view(),
+        name="cart-detail",
+    ),
+]
 orders_parttern = []
 urlpatterns = stores_pattern + products_parttern + carts_parttern + orders_parttern
