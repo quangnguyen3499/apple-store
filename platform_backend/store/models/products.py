@@ -26,6 +26,7 @@ class Product(Timestampable):
     sellable = models.BooleanField(default=False)
     items_sold = models.IntegerField(default=0)
     on_sale = models.BooleanField(default=False)
+    avg_rating = models.FloatField(default=0)
 
     @property
     def is_saleable(self):
@@ -55,7 +56,6 @@ class ProductImage(Timestampable):
     upload = models.ImageField(upload_to=get_image_path)
     default = models.BooleanField(default=False)
     image = models.ImageField()
-    avg_rating = models.FloatField(default=0)
 
     @property
     def url(self):
