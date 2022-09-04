@@ -3,12 +3,19 @@ from django.db import transaction
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
+from ..models.orders import DeliveryAddress, Order
 from ..models.carts import Cart, CartItem
 from ..models.store import Store
+
 from ..selectors.store import get_store
 from ..selectors.products import get_product_by_id, get_sellable_product_by_id
 from ..selectors.carts import get_cart
-from platform_backend.users.models import User
+
+from ...users.models import User
+
+from ...promo.services import apply_cart_promo
+
+from ..services.orders import create_order
 
 
 def create_cart(
@@ -61,3 +68,55 @@ def delete_item_from_cart(
     CartItem.objects.get(product=product, cart=cart).delete()
 
     return get_cart(pk=cart.id)
+
+
+@transaction.atomic
+def checkout_cart(
+    *,
+    user: User,
+    cart: Cart,
+    delivery_address: DeliveryAddress,
+    delivery_method: Order.DeliveryMethod,
+    payment_method: Order.PaymentMethod.choices,
+    payment_status: Order.PaymentStatus.choices,
+    order_status: Order.OrderStatus.choices,
+) -> Cart:
+    if cart.line_item.count() == 0:
+        raise ValidationError("Cart has no items.")
+    if cart.is_checked_out:
+        raise ValidationError("Cart has been checked out.")
+
+    order = create_order(
+        user=user,
+        cart=cart,
+        delivery_method=delivery_method,
+        payment_method=payment_method,
+        payment_status=payment_status,
+        status=order_status,
+    )
+    if delivery_address and delivery_method == "DELIVERY":
+        delivery_address = DeliveryAddress.objects.create(
+            order=order,
+            user=user,
+            address=delivery_address.address,
+            city=delivery_address.city,
+            province=delivery_address.province,
+        )
+
+    return order
+
+
+@transaction.atomic
+def apply_cart_discount(
+    *,
+    cart: Cart,
+    discount_type: Cart.DiscountTypes,
+    code: str,
+) -> Cart:
+    if discount_type == Cart.DiscountTypes.VOUCHER:
+        pass
+        # TODO
+    elif discount_type == Cart.DiscountTypes.PROMO:
+        apply_cart_promo(cart=cart, code=code)
+        # delete all vouchers
+    return cart

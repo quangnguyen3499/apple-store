@@ -17,7 +17,7 @@ stores_pattern = [
     ),
 ]
 
-products_parttern = [
+products_pattern = [
     path(
         "api/v1/product/category/creating",
         products.CreatingCategoryAPIView.as_view(),
@@ -44,7 +44,7 @@ products_parttern = [
         name="product_list",
     ),
 ]
-carts_parttern = [
+carts_pattern = [
     path(
         "api/v1/cart/item/update",
         carts.CartAddItemAPIView.as_view(),
@@ -55,6 +55,22 @@ carts_parttern = [
         carts.CartDetailAPIView.as_view(),
         name="cart-detail",
     ),
+    path(
+        "api/v1/cart/checkout/",
+        carts.CartCheckoutAPIView.as_view(),
+        name="cart-checkout",
+    ),
+    path(
+        "api/v1/cart/apply-promo/",
+        carts.CartApplyDiscountAPIView.as_view(),
+        name="cart-apply-promo",
+    ),
 ]
-orders_parttern = []
-urlpatterns = stores_pattern + products_parttern + carts_parttern + orders_parttern
+orders_pattern = [
+    # path(
+    #     "api/v1/orders/cancel/",
+    #     orders.OrderCancelAPIView.as_view(),
+    #     name="order-cancel",
+    # ),
+]
+urlpatterns = stores_pattern + products_pattern + carts_pattern + orders_pattern

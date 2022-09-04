@@ -55,7 +55,6 @@ class ProductImage(Timestampable):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="image")
     upload = models.ImageField(upload_to=get_image_path)
     default = models.BooleanField(default=False)
-    image = models.ImageField()
 
     @property
     def url(self):

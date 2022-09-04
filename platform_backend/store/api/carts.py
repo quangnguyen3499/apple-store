@@ -1,6 +1,6 @@
 import structlog
-
-from rest_framework import serializers, status
+import stripe
+from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -8,17 +8,20 @@ from rest_framework.permissions import IsAuthenticated
 from platform_backend.common.utils import inline_serializer
 from platform_backend.common.api.permissions import IsAdmin, IsCustomer
 from platform_backend.common.api.mixins import APIErrorsMixin
-from platform_backend.common.api.pagination import (
-    LimitOffsetPagination,
-    get_paginated_response,
-)
+from platform_backend.store.selectors.products import get_product_by_id
 
 from ..models.carts import Cart
-from ..services.carts import add_item_to_cart, delete_item_from_cart
+from ..models.orders import Order
+from ..services.carts import add_item_to_cart, delete_item_from_cart, checkout_cart, apply_cart_discount
 from ..selectors.carts import get_cart
 
+from django.conf import settings
+from django.db import transaction
 
 logger = structlog.get_logger(__name__)
+
+# config stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class CartLineItemSerializer(serializers.Serializer):
@@ -83,6 +86,12 @@ class CartSerializer(serializers.Serializer):
         return CartLineItemSerializer(obj.cart_item, many=True).data
 
 
+class CartDeliveryAddressSerializer(serializers.Serializer):
+    address = serializers.CharField()
+    city = serializers.CharField()
+    province = serializers.CharField()
+
+
 class CartAddItemAPIView(APIErrorsMixin, APIView):
     permission_classes = [IsAuthenticated, IsCustomer]
 
@@ -126,3 +135,57 @@ class CartDetailAPIView(APIErrorsMixin, APIView):
         cart = get_cart(pk=pk)
         cart_data = CartSerializer(cart).data
         return Response(cart_data)
+
+
+class CreateCheckoutSessionView(APIView):
+    def post(self, request, product_id):
+        product = get_product_by_id(pk=product_id)
+        YOUR_DOMAIN = "http://127.0.0.1:8000"
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price": product.stripe_price_id,
+                    "quantity": 1,
+                },
+            ],
+            mode="payment",
+            success_url=YOUR_DOMAIN + "/success/",
+            cancel_url=YOUR_DOMAIN + "/cancel/",
+        )
+        return Response(checkout_session.url)
+
+
+class CartCheckoutAPIView(APIErrorsMixin, APIView):
+    class CartCheckoutRequestSerializer(serializers.Serializer):
+        delivery_method = serializers.ChoiceField(choices=Order.DeliveryMethod.choices)
+        delivery_address = CartDeliveryAddressSerializer(
+            required=False, allow_null=True, default=None
+        )
+
+    def post(self, request):
+        serializer = self.CartCheckoutRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            data = serializer.validated_data
+            delivery_address = data["delivery_address"] if data["delivery_address"] else None
+            order = checkout_cart(
+                cart=request.user.cart,
+                user=request.user,
+                delivery_address=delivery_address,
+                delivery_method=data["delivery_method"],
+            )
+        return Response({"order_id": order.id})
+
+class CartApplyDiscountAPIView(APIErrorsMixin, APIView):
+    class CartApplyDiscountRequestSerializer(serializers.Serializer):
+        discount_type = serializers.ChoiceField(choices=Cart.DiscountTypes)
+        code = serializers.CharField()
+
+    def post(self, request):
+        serializer = self.CartApplyDiscountRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        apply_cart_discount(cart=request.user.cart, **serializer.validated_data)
+
+        return Response({"success": True})

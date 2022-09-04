@@ -49,8 +49,9 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-    'django_filters',
+    "django_filters",
     "rest_framework",
+    "django_celery_beat",
 ]
 
 LOCAL_APPS = [
@@ -59,6 +60,9 @@ LOCAL_APPS = [
     "platform_backend.inventory",
     "platform_backend.promo",
     "platform_backend.rating",
+    "platform_backend.payment",
+    "platform_backend.mystripe",
+    "platform_backend.mycelery",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -176,3 +180,10 @@ SIMPLE_JWT = {
 }
 
 RATING_TIME_LIMIT = 7
+
+# Stripe
+STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
+
+# Celery
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

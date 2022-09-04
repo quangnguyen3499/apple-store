@@ -1,12 +1,13 @@
-from datetime import timedelta
+from datetime import timedelta, date
 import secrets
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import secrets
 import uuid
 from rest_framework.permissions import BasePermission
 from django.contrib.auth.models import UserManager
+from django.db.models.query import Q
+from platform_backend.common.models.mixins import Timestampable
 
 
 class SoftDeleteManager(models.Manager):
@@ -91,6 +92,7 @@ class Customer(SoftDeleteModel):
     updated_date = models.DateTimeField(auto_now=True, max_length=(6))
     created_date = models.DateTimeField(auto_now_add=True, max_length=(6))
     date_joined = models.DateTimeField(max_length=(6), null=True, blank=True)
+    stripe_customer_id = models.CharField(max_length=254, null=True, blank=True)
     objects = SoftDeleteManager()
     all_objects = models.Manager()
 

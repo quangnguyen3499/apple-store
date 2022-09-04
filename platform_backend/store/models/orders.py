@@ -1,11 +1,9 @@
 import uuid
 from django.db import models
 
-from platform_backend.common.models.mixins import Timestampable
-from platform_backend.users.models import User
+from ...common.models.mixins import Timestampable
+from ...users.models import User
 from .carts import Cart
-from datetime import datetime
-from django.conf import settings
 
 
 class Order(Timestampable):
@@ -83,3 +81,13 @@ class Order(Timestampable):
         # else:
         #     return False
         return True
+
+class DeliveryAddress(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    address = models.CharField(max_length=255, default="", blank=True)
+    city = models.CharField(max_length=255, default="", blank=True)
+    province = models.CharField(max_length=255, default="", blank=True)
+
+    class Meta:
+        verbose_name_plural = "delivery addresses"
