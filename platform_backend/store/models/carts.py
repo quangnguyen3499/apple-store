@@ -43,6 +43,19 @@ class Cart(Timestampable):
             total += item.subtotal
         return total
 
+    @property
+    def total_discount_amount(self):
+        total = 0
+        for promo in self.promos.all():
+            total += promo.discount_amount
+        # for voucher in self.vouchers.all():
+        #     total += voucher.discount_amount
+        return total
+
+    @property
+    def total_amount(self):
+        return self.total_items_amount - self.total_discount_amount
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name="cart_item", on_delete=models.CASCADE)

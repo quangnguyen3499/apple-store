@@ -1,4 +1,5 @@
 from platform_backend.common.models.mixins import Timestampable
+from platform_backend.common.models.fields import PriceField
 from django.db import models
 from .invoice import Invoice
 from django.utils import timezone
@@ -23,12 +24,12 @@ class Payment(Timestampable):
         choices=PaymentMethod.choices,
     )
     invoice_url = models.CharField(max_length=255, null=True, blank=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, default=0)
     status = models.CharField(
         max_length=16, choices=Status.choices, default=Status.PENDING
     )
+    currency = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(default="", blank=True)
-    paid_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    paid_at = models.DateTimeField(null=True, blank=True, db_index=True, default=timezone.now)
     refunded_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     @property
@@ -37,11 +38,6 @@ class Payment(Timestampable):
 
 
 class OnlinePayment(Timestampable):
-    class Status(models.TextChoices):
-        PENDING = "PENDING", "PENDING"
-        SUCCESS = "SUCCESS", "SUCCESS"
-        FAILED = "FAILED", "FAILED"
-
     class CardType(models.TextChoices):
         VISA = "VISA", "visa"
         MASTERCARD = "MASTERCARD", "mastercard"
@@ -52,9 +48,7 @@ class OnlinePayment(Timestampable):
         Payment, on_delete=models.CASCADE, related_name="online_payment"
     )
     amount = models.DecimalField(max_digits=19, decimal_places=4)
-    status = models.CharField(
-        max_length=16, choices=Status.choices, default=Status.PENDING, db_index=True
-    )
+    credit_card_id = models.CharField(max_length=255, default="")
     card_number = models.CharField(max_length=20, default="")
     card_expired_at = models.DateField(default=timezone.now)
     card_brand = models.CharField(max_length=20, default="")
@@ -67,11 +61,6 @@ class OnlinePayment(Timestampable):
 
 
 class CODPayment(Timestampable):
-    class Status(models.TextChoices):
-        PENDING = "PENDING", "PENDING"
-        SUCCESS = "SUCCESS", "SUCCESS"
-        FAILED = "FAILED", "FAILED"
-
     payment = models.ForeignKey(
         Payment, on_delete=models.CASCADE, related_name="cod_payment"
     )
@@ -80,6 +69,3 @@ class CODPayment(Timestampable):
     province = models.CharField(max_length=254, null=True, blank=True)
     shipping_cost = models.IntegerField(default=0)
     amount = models.DecimalField(max_digits=19, decimal_places=4)
-    status = models.CharField(
-        max_length=16, choices=Status.choices, default=Status.PENDING, db_index=True
-    )
