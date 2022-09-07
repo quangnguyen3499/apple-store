@@ -83,8 +83,8 @@ class Order(Timestampable):
         return True
 
 class DeliveryAddress(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="orders")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
     address = models.CharField(max_length=255, default="", blank=True)
     city = models.CharField(max_length=255, default="", blank=True)
     province = models.CharField(max_length=255, default="", blank=True)

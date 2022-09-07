@@ -8,21 +8,21 @@ def create_order(
     *,
     user: User = None,
     cart: Cart,
-    delivery_address: DeliveryAddress,
     delivery_method: Order.DeliveryMethod,
     payment_method: Order.PaymentMethod.choices,
-    payment_status: Order.PaymentStatus.choices,
     order_status: Order.OrderStatus.choices,
 ) -> Order:
     order = Order.objects.create(
         user=user,
         cart=cart,
-        delivery_address=delivery_address,
         delivery_method=delivery_method,
         status=order_status,
         payment_method=payment_method,
-        payment_status=payment_status,
     )
+
+    if payment_method == "CARD":
+        order.payment_status = Order.PaymentStatus.PAID
+    order.save()
 
     # update Cart status
     cart.is_checked_out = True
