@@ -16,7 +16,7 @@ class Promo(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class UserPromoClaim(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, related_name="order", null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="user_claims", on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name="+", null=True, on_delete=models.CASCADE)
     promo = models.ForeignKey(Promo, related_name="user_claims", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

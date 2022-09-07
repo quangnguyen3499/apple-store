@@ -45,9 +45,9 @@ class Cart(Timestampable):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_item")
+    cart = models.ForeignKey(Cart, related_name="cart_item", on_delete=models.CASCADE)
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="cart_item"
+        Product, related_name="cart_item", on_delete=models.CASCADE
     )
     quantity = models.IntegerField(default=0)
 

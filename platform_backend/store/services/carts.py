@@ -78,10 +78,9 @@ def checkout_cart(
     delivery_address: DeliveryAddress,
     delivery_method: Order.DeliveryMethod,
     payment_method: Order.PaymentMethod.choices,
-    payment_status: Order.PaymentStatus.choices,
     order_status: Order.OrderStatus.choices,
 ) -> Cart:
-    if cart.line_item.count() == 0:
+    if cart.cart_item.count() == 0:
         raise ValidationError("Cart has no items.")
     if cart.is_checked_out:
         raise ValidationError("Cart has been checked out.")
@@ -91,16 +90,15 @@ def checkout_cart(
         cart=cart,
         delivery_method=delivery_method,
         payment_method=payment_method,
-        payment_status=payment_status,
-        status=order_status,
+        order_status=order_status,
     )
     if delivery_address and delivery_method == "DELIVERY":
         delivery_address = DeliveryAddress.objects.create(
             order=order,
             user=user,
-            address=delivery_address.address,
-            city=delivery_address.city,
-            province=delivery_address.province,
+            address=delivery_address["address"],
+            city=delivery_address["city"],
+            province=delivery_address["province"],
         )
 
     return order

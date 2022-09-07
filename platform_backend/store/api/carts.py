@@ -13,7 +13,7 @@ from platform_backend.store.selectors.products import get_product_by_id
 from ..models.carts import Cart
 from ..models.orders import Order
 from ..services.carts import add_item_to_cart, delete_item_from_cart, checkout_cart, apply_cart_discount
-from ..selectors.carts import get_cart
+from ..selectors.carts import get_cart, get_user_cart
 
 from django.conf import settings
 from django.db import transaction
@@ -53,7 +53,7 @@ class CartLineItemSerializer(serializers.Serializer):
 
 class CartSerializer(serializers.Serializer):
     cart_item = serializers.SerializerMethodField()
-    promo = inline_serializer(
+    promos = inline_serializer(
         many=True,
         fields={
             "promo": inline_serializer(
@@ -162,6 +162,8 @@ class CartCheckoutAPIView(APIErrorsMixin, APIView):
         delivery_address = CartDeliveryAddressSerializer(
             required=False, allow_null=True, default=None
         )
+        payment_method = serializers.ChoiceField(choices=Order.PaymentMethod.choices)
+        order_status = serializers.ChoiceField(choices=Order.OrderStatus.choices)
 
     def post(self, request):
         serializer = self.CartCheckoutRequestSerializer(data=request.data)
@@ -170,10 +172,12 @@ class CartCheckoutAPIView(APIErrorsMixin, APIView):
             data = serializer.validated_data
             delivery_address = data["delivery_address"] if data["delivery_address"] else None
             order = checkout_cart(
-                cart=request.user.cart,
+                cart=get_user_cart(user=request.user),
                 user=request.user,
                 delivery_address=delivery_address,
                 delivery_method=data["delivery_method"],
+                payment_method=data["payment_method"],
+                order_status=data["order_status"]
             )
         return Response({"order_id": order.id})
 
