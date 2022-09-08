@@ -34,3 +34,17 @@ def create_stripe_charge(
         customer=customer,
         description=description,
     )
+
+def create_stripe_invoice(
+    *,
+    customer: str,
+    description: str,
+    currency: str,
+    order: str,
+):
+    stripe.Invoice.create(
+        customer=customer,
+        description=description,
+        currency=currency,
+        order=order,
+    )

@@ -36,4 +36,9 @@ class Migration(migrations.Migration):
             name='last_4_digits',
             field=models.CharField(blank=True, max_length=4, null=True),
         ),
+        migrations.AddField(
+            model_name='onlinepayment',
+            name='credit_card_id',
+            field=models.CharField(default='', max_length=255),
+        ),
     ]
