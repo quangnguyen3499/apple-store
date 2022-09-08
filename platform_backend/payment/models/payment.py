@@ -23,7 +23,6 @@ class Payment(Timestampable):
         max_length=50,
         choices=PaymentMethod.choices,
     )
-    invoice_url = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(
         max_length=16, choices=Status.choices, default=Status.PENDING
     )
@@ -31,11 +30,6 @@ class Payment(Timestampable):
     notes = models.TextField(default="", blank=True)
     paid_at = models.DateTimeField(null=True, blank=True, db_index=True, default=timezone.now)
     refunded_at = models.DateTimeField(null=True, blank=True, db_index=True)
-
-    @property
-    def total_due(self):
-        return self.amount
-
 
 class OnlinePayment(Timestampable):
     class CardType(models.TextChoices):
@@ -47,7 +41,7 @@ class OnlinePayment(Timestampable):
     payment = models.ForeignKey(
         Payment, on_delete=models.CASCADE, related_name="online_payment"
     )
-    amount = models.DecimalField(max_digits=19, decimal_places=4)
+    amount = models.IntegerField(default=0)
     credit_card_id = models.CharField(max_length=255, default="")
     card_number = models.CharField(max_length=20, default="")
     card_expired_at = models.DateField(default=timezone.now)
@@ -68,4 +62,4 @@ class CODPayment(Timestampable):
     city = models.CharField(max_length=254, null=True, blank=True)
     province = models.CharField(max_length=254, null=True, blank=True)
     shipping_cost = models.IntegerField(default=0)
-    amount = models.DecimalField(max_digits=19, decimal_places=4)
+    amount = models.IntegerField(default=0)
