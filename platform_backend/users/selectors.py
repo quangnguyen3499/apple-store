@@ -38,7 +38,7 @@ class CustomerFilter(django_filters.FilterSet):
         model = Customer
         fields = ("first_name", "last_name", "username")
 
-    def search_filter(self, queryset, value):
+    def search_filter(self, queryset, name, value):
         return queryset.filter(
             Q(first_name__icontains=value)
             | Q(last_name__icontains=value)

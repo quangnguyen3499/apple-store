@@ -310,3 +310,6 @@ $RECYCLE.BIN/
 
 # IDE
 .idea
+
+# EC2 AWS
+my-aws-c2.pem
