@@ -187,3 +187,6 @@ STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
 
 # Celery
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False

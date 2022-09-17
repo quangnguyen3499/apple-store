@@ -23,7 +23,7 @@ def get_user_by_token(*, token: str) -> User:
         raise NotFound("Token not valid")
 
 
-def user_list(*, type, filters=None) -> QuerySet[User]:
+def user_list(*, type: User.Types.choices, filters=None) -> QuerySet[User]:
     filters = filters or {}
     customers = User.objects.filter(type=type).all()
     return CustomerFilter(filters, customers).qs
