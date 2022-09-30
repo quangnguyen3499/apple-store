@@ -192,9 +192,8 @@ RATING_TIME_LIMIT = 7
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
 
-# Celery
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-CELERY_BROKER_URL = 'amqp://localhost'
+# CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = env("AMQP_URL")
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 

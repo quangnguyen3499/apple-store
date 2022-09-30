@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  platform:
+    build: .
+    image: platform-backend
+    command: gunicorn --bind 0.0.0.0:8000 config.wsgi:application
+    env_file:
+      - local.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres
+
+  # worker:
+  #   image: sarisuki-platform
+  #   command: celery -A platform_backend.messagebus.celery worker --loglevel=INFO
+  #   env_file:
+  #     - local.env
+  #   volumes:
+  #     - ./:/app
+
+  # scheduler:
+  #   image: sarisuki-platform
+  #   command: celery -A platform_backend.messagebus.celery beat --loglevel=INFO
+  #   env_file:
+  #     - local.env
+  #   volumes:
+  #     - ./:/app
+
+  postgres:
+    image: postgres:12
+    environment:
+      - POSTGRES_USER=dcbfwiutmldfmm
+      - POSTGRES_PASSWORD=502ff846e34b18441f64c2d29181b68174f27737b7cc52edc03f7e56c801f927
+      - POSTGRES_DB=dfhkv718bopi2h
+    volumes:
+      - pg-volume:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+volumes:
+  pg-volume:
