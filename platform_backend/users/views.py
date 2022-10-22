@@ -32,7 +32,7 @@ from ..mystripe.services import create_stripe_customer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import threading
-
+from ..mycelery.task import send_mail_active
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.CharField()
@@ -97,7 +97,7 @@ class CreateCustomerAPIView(APIView):
         )
         t.start()
         t.join()
-
+        
         data = CustomerSerializer(customer).data
         data["stripe_customer_id"] = stripe_customer_id
         return Response(data, status=201)
@@ -200,6 +200,7 @@ class ListCustomerView(APIErrorsMixin, APIView):
         filters = self.FilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
         customers = user_list(filters=filters.validated_data, type=User.Types.CUSTOMER)
+        send_mail_active(email=customers[0].email, code='123')
         return get_paginated_response(
             pagination_class=self.Pagination,
             serializer_class=UserSerializer,

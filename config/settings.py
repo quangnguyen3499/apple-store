@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "rest_framework",
     "django_celery_beat",
+    "django_celery_results",
 ]
 
 LOCAL_APPS = [
@@ -165,7 +166,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = env("STATIC_URL", default="/static/")
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "staticfiles/"),
 )
@@ -191,8 +192,13 @@ RATING_TIME_LIMIT = 7
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
 
-# Celery
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+# CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = env("AMQP_URL")
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
 
+# CSRF
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
+
+AMQP_URL = env("AMQP_URL")
