@@ -7,6 +7,9 @@ from .selectors import get_user_by_token
 from .models import Customer, User, Admin
 from allauth.utils import generate_unique_username
 
+from django.template.loader import render_to_string
+
+from django.conf import settings
 
 @transaction.atomic
 def create_user(
@@ -145,3 +148,18 @@ def update_customer(
 def delete_user(*, user: User):
     user.soft_delete()
     return
+
+
+def send_mail_jinja2_service(*, email: str, content: str):
+    subject = "Monthly Statistic Email"
+    body = render_to_string("email_list.html", {
+        "name": "hello",
+    })
+    to = [email]
+    send_mail(
+        subject=subject,
+        message="",
+        html_message=body,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=to,
+    )

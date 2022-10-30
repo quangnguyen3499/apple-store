@@ -46,6 +46,11 @@ user_patterns = [
         TokenBlacklistView.as_view(),
         name="token_blacklist",
     ),
+    path(
+        "api/v1/users/invoice/monthly/",
+        views.SendInvoiceMonthlyView.as_view(),
+        name="send_invoice_monthly",
+    ),
 ]
 
 customer_patterns = [

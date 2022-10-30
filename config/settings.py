@@ -95,6 +95,21 @@ TEMPLATES = [
             ],
         },
     },
+    {
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        "DIRS": [
+            os.path.join(BASE_DIR, "platform_backend/templates"),
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
@@ -167,9 +182,7 @@ USE_TZ = True
 
 STATIC_URL = env("STATIC_URL", default="/static/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "staticfiles/"),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles/"),)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
@@ -181,9 +194,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'UPDATE_LAST_LOGIN': True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "UPDATE_LAST_LOGIN": True,
 }
 
 RATING_TIME_LIMIT = 7
@@ -194,11 +207,14 @@ STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
 
 # CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_BROKER_URL = env("AMQP_URL")
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
 
 # CSRF
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 
 AMQP_URL = env("AMQP_URL")
+
+# AWS
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")

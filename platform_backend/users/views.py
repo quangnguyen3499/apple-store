@@ -27,12 +27,15 @@ from ..users.services import (
     update_customer,
     delete_user,
     create_admin,
+    send_mail_jinja2_service,
 )
 from ..mystripe.services import create_stripe_customer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import threading
 from ..mycelery.task import send_mail_active
+from ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.CharField()
@@ -196,6 +199,7 @@ class ListCustomerView(APIErrorsMixin, APIView):
         last_name = serializers.CharField(default="", required=False, allow_blank=True)
         username = serializers.CharField(default="", required=False, allow_blank=True)
 
+    @method_decorator(ratelimit(key='ip', rate='1/s', method='GET'))
     def get(self, request):
         filters = self.FilterSerializer(data=request.query_params)
         filters.is_valid(raise_exception=True)
@@ -211,7 +215,7 @@ class ListCustomerView(APIErrorsMixin, APIView):
 
 
 class GetAndUpdateAndDeleteCustomerView(APIErrorsMixin, APIView):
-    permission_classes = [IsAuthenticated, IsCustomer]
+    # permission_classes = [IsAuthenticated, IsCustomer]
 
     class UpdateRequestSerializer(serializers.Serializer):
         first_name = serializers.CharField(default="", required=False, allow_blank=True)
@@ -221,8 +225,8 @@ class GetAndUpdateAndDeleteCustomerView(APIErrorsMixin, APIView):
         city = serializers.CharField(default="", required=False, allow_blank=True)
         province = serializers.CharField(default="", required=False, allow_blank=True)
 
-    def get(self, request):
-        user = get_user_by_id(id=request.user.id)
+    def get(self, request, user_id):
+        user = get_user_by_id(id=user_id)
         data = UserSerializer(user).data
         return Response(data, status=200)
 
@@ -307,3 +311,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+class SendInvoiceMonthlyView(APIView):
+    template_name = 'email_list.html'
+
+    def post(self, request):
+        send_mail_jinja2_service(
+            email="baoquanggogreen@gmail.com", content="Jinja2 test template",
+        )
+
+        return Response("success", status=200)

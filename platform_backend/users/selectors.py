@@ -20,7 +20,7 @@ def get_user_by_token(*, token: str) -> User:
     try:
         return User.objects.get(token=token)
     except User.DoesNotExist:
-        raise NotFound("Token not valid")
+        raise ObjectDoesNotExist("Token not valid")
 
 
 def user_list(*, type: User.Types.choices, filters=None) -> QuerySet[User]:

@@ -33,3 +33,5 @@
 # - celery -A platform_backend.mycelery worker -l INFO --pool=solo
 # Run flower - monitoring tool
 # - celery -A platform_backend.mycelery flower -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+test
