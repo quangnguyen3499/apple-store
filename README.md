@@ -13,25 +13,23 @@
 # 6. Run docker-compose restart
 # 7. Run docker-compose exec platform python manage.py createsuperuser
 
-# PAYMENT
-# Stripe usage in this project:
-# 1. Create customer
-# 2. Add payment details
-# 3. Create payment
+### PAYMENT
+### Stripe usage in this project:
+### 1. Create customer
+### 2. Add payment details
+### 3. Create payment
 
-# Stripe docs:
-# 1. https://stripe.com/docs/api
-# ...
+### Stripe docs:
+### 1. https://stripe.com/docs/api
+### ...
 
-# BROKER
-# RabbitMQ
+### BROKER
+### RabbitMQ
 
-# Celery
-# Run beat
-# - celery -A platform_backend.mycelery beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-# Run worker
-# - celery -A platform_backend.mycelery worker -l INFO --pool=solo
-# Run flower - monitoring tool
-# - celery -A platform_backend.mycelery flower -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-
-test
+### Celery
+### Run beat
+### - celery -A platform_backend.mycelery beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+### Run worker
+### - celery -A platform_backend.mycelery worker -l INFO --pool=solo
+### Run flower - monitoring tool
+### - celery -A platform_backend.mycelery flower -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
