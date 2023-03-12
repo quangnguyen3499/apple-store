@@ -4,14 +4,14 @@
 - [ ] Stripe: Payment with multi cards (select one)
 - [ ] Implement OrderItem (Cart is deleted when checking out)
 
-# e-commerce
-# 1. Install docker & docker compose
-# 2. Copy `dev.env` to `local.env`
-# 3. Run docker-compose build
-# 4. Run docker-compose up -d
-# 5. Run docker-compose exec platform python manage.py migrate
-# 6. Run docker-compose restart
-# 7. Run docker-compose exec platform python manage.py createsuperuser
+### e-commerce
+### 1. Install docker & docker compose
+### 2. Copy `dev.env` to `local.env`
+### 3. Run docker-compose build
+### 4. Run docker-compose up -d
+### 5. Run docker-compose exec platform python manage.py migrate
+### 6. Run docker-compose restart
+### 7. Run docker-compose exec platform python manage.py createsuperuser
 
 ### PAYMENT
 ### Stripe usage in this project:
