@@ -32,7 +32,7 @@ services:
   #     - ./:/app
 
   postgres:
-    image: postgres:12
+    image: postgres:16
     environment:
       - local.env
     volumes:
